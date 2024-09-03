@@ -48,6 +48,11 @@ func (w *Walker) CountLines(dir string) error {
 
 	if err := filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
 
+		if err != nil {
+			fmt.Printf("Error %v occured when walking through path: %s. Omitting ...", err, path)
+			return nil
+		}
+
 		if info.IsDir() {
 			return nil
 		}
@@ -94,9 +99,9 @@ func main() {
 
 	flag.Parse()
 
-	dir := flag.Args()[0]
-	if dir == "" {
-		log.Fatal("Path cannot be blank")
+	args := flag.Args()
+	if len(args) == 0 {
+		fmt.Println("You must provide path in first argument, e.g. 'Walker ./path/to/file'")
 	}
 
 	walker := Walker{
@@ -110,7 +115,7 @@ func main() {
 		walker.WithOmitBlank()
 	}
 
-	if err := walker.CountLines(dir); err != nil {
+	if err := walker.CountLines(args[0]); err != nil {
 		log.Fatal(err)
 	}
 
